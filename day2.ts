@@ -13,7 +13,7 @@ console.info(`Part1: ${valid.length}`);
 
 const fixed = invalid.filter((report) => {
   for (let i = 0; i < report.length; i++) {
-    const test = report.slice(0, i).concat(report.slice(i + 1));
+    const test = report.toSpliced(i, 1);
     if (isValid(test)) {
       return true;
     }
