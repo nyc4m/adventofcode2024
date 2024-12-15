@@ -6,12 +6,11 @@ const directions = {
 } as const;
 
 const [map, moves, start, [rows, cols]] = parseInput(
-  await Deno.readTextFile("./example"),
+  await Deno.readTextFile("./input"),
 );
 
 let current = start;
 for (const [row, col] of moves) {
-  console.clear();
   const nextCell = map.get(hash([current[0] + row, current[1] + col]));
   if (nextCell === ".") {
     current = moveBot(map, current, [row, col]);
@@ -24,9 +23,16 @@ for (const [row, col] of moves) {
       current = moveBot(map, current, [row, col]);
     }
   }
-  console.debug(logMap(map, [rows, cols]));
-  await new Promise((r) => setTimeout(r, 100));
 }
+
+console.debug("Part1: ", [...map.entries()].reduce((prev, [coord, cell]) => {
+  if (cell === "O") {
+    const [row, col] = coord.split("-").map(Number).map((d) => d + 1);
+
+    return prev + row * 100 + col;
+  }
+  return prev;
+}, 0));
 
 function moveBot(
   map: Map<string, string>,
@@ -34,9 +40,9 @@ function moveBot(
   [dr, dc]: [number, number],
 ) {
   map.set(hash(current), ".");
-  const pos: [number, number] = [row + dr, col + dc] ;
+  const pos: [number, number] = [row + dr, col + dc];
   map.set(hash(pos), "@");
-  return pos
+  return pos;
 }
 
 function parseInput(input: string) {
@@ -52,9 +58,9 @@ function parseInput(input: string) {
 
   return [
     map,
-    moves.slice(0, -1).split("").map((m) =>
-      directions[m as keyof typeof directions]
-    ),
+    moves.slice(0, -1).split("\n").map((line) =>
+      line.split("").map((m) => directions[m as keyof typeof directions])
+    ).flat(),
     start as [number, number],
     dimensions(_map),
   ] as const;
